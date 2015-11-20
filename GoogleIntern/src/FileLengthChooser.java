@@ -7,7 +7,7 @@ import java.util.List;
  * 1 Given a string in such format:
  *   fol0
  *    fol1
- *    fol2
+ *    fol2 
  *     photo.jpg
  *     morning.jpg
  *    fol3
@@ -20,9 +20,12 @@ import java.util.List;
  *  there are only directories, return -1. Other wise, return the length
  *  like 
  *  	fol0/fol2/morning.jpg
- */
-
-/**
+ *  
+ *  3 Time Constraint
+ *    - Best O(n)
+ *    - Average O(n)
+ *    - Worst O(n^2)
+ *  
  * @author Yuyang He
  * @date 8:42:10 AM, Nov 18, 2015
  * @version 1.0
