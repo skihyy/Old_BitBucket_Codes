@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Scanner;
 
 import structures.Node;
-import util.NodeUtil;
 
 /**
  * This class sorts a given list of strings which represent numbers in the given
@@ -95,7 +94,6 @@ public class Radixsort
 			scatter(i);
 			gather();
 		}
-
 		return masterListRear;
 	}
 
@@ -117,7 +115,7 @@ public class Radixsort
 		Node<String> tmp = null;
 		while (sc.hasNext())
 		{
-			readLine = sc.nextInt() + "";
+			readLine = sc.next();
 			if (!readLine.isEmpty())
 			{
 				if (null == masterListRear)
@@ -131,6 +129,7 @@ public class Radixsort
 				}
 			}
 		}
+		setListAsRequired();
 	}
 
 	/**
@@ -172,36 +171,94 @@ public class Radixsort
 	 */
 	public void scatter(int pass)
 	{
-		int length = NodeUtil.countLength(masterListRear);
-		
-		if(0 == length)
-		{
-			return;
-		}
-		
-		int position = -1;
-		char [] tmpData = null;
+		int position = -1, count = 0;
+		char[] tmpData = null;
+		String tmpBucketData = null;
+		Node<String> tmpNode = null;
 
-		for(int i = 0; i < length; ++i)
+		while (null != masterListRear)
 		{
-			tmpData = masterListRear.getData().toCharArray();
-			position = Character.digit(tmpData[tmpData.length - 1], radix);
-			
-			if(null == buckets[position])
+			/**
+			 * IMPORTANT: According to the instructions, every time the REAR of 
+			 * the list, in stead of the front.
+			 * Now , get to the 1st node from the last one.
+	 		 */
+			if(0 == count)
 			{
-				buckets[position] = masterListRear;
 				masterListRear = masterListRear.getNext();
-				buckets[position].setNext(buckets[position]);
+				++count;
+			}
+			
+			tmpData = masterListRear.getData().toCharArray();
+			if(0 <= tmpData.length - 1 - pass)
+			{
+				position = Character.digit(tmpData[tmpData.length - 1 - pass], radix);
 			}
 			else
 			{
-				buckets[position].setNext(masterListRear);
-				masterListRear = masterListRear.getNext();
-				buckets[position].getNext().setNext(buckets[position]);
+				position = 0;
+			}
+
+			if (-1 == position)
+			{
+				return;
+			}
+
+			if (null == buckets[position])
+			{
+				buckets[position] = masterListRear;
+				setListRearToNextOne();
+				buckets[position].setNext(buckets[position]);
+
+			} else
+			{
+				tmpBucketData = buckets[position].getData();
+				tmpNode = buckets[position];
+				
+				//find the tail
+				while(!tmpBucketData.equals(tmpNode.getNext().getData()))
+				{
+					tmpNode = tmpNode.getNext();
+				}
+				
+				tmpNode.setNext(masterListRear);
+				setListRearToNextOne();
+				tmpNode.getNext().setNext(buckets[position]);
 			}
 		}
-		
-		System.out.println(masterListRear);
+	}
+
+	/**
+	 * This function will delete the node that is currently pointed by
+	 * masterListRear. And masterListRear will be automatically set to the next
+	 * node that is next to the current node.
+	 */
+	private void setListRearToNextOne()
+	{
+		// 0 node
+		if (null == masterListRear)
+		{
+			return;
+		}
+
+		String tmpData = masterListRear.getData();
+
+		// 1 node
+		if (tmpData.equals(masterListRear.getNext().getData()))
+		{
+			masterListRear = null;
+		}
+		// > 1 node
+		else
+		{
+			while (!tmpData.equals(masterListRear.getNext().getData()))
+			{
+				masterListRear = masterListRear.getNext();
+			}
+			masterListRear.setNext(masterListRear.getNext().getNext());
+
+			masterListRear = masterListRear.getNext();
+		}
 	}
 
 	/**
@@ -213,7 +270,70 @@ public class Radixsort
 	 */
 	public void gather()
 	{
-		// WRITE YOUR CODE HERE
+		String tmpData = null;
+		Node<String> tmpNode = null;
+		
+		for (int i = 0; i < buckets.length; ++i)
+		{
+			if (null == buckets[i])
+			{
+				continue;
+			} else if (null == masterListRear)
+			{
+				masterListRear = buckets[i];
+			} else
+			{
+				tmpData = masterListRear.getData();
+				tmpNode = masterListRear;
+				
+				while(!tmpData.equals(tmpNode.getNext().getData()))
+				{
+					tmpNode = tmpNode.getNext();
+				}
+				
+				tmpNode.setNext(buckets[i]);
+				
+				tmpData = buckets[i].getData();
+				tmpNode = tmpNode.getNext();
+				
+				while(!tmpData.equals(tmpNode.getNext().getData()))
+				{
+					tmpNode = tmpNode.getNext();
+				}
+				tmpNode.setNext(masterListRear);
+				tmpNode = null;
+				tmpData = null;
+			}
+
+			buckets[i] = null;
+		}
+		
+		/**
+		 * IMPORTANT: According to the instructions, every time the REAR of 
+		 * the list, in stead of the front.
+		 * So now get to the last node.
+		 */
+		setListAsRequired();
+	}
+
+	/**
+	 * <p>
+	 * IMPORTANT: According to the instructions, every time the REAR of 
+	 * the list, in stead of the front.
+	 * </p>
+	 * <p>
+	 * This function will set the masterListRear as required, i.e.,
+	 * the front of masterListRear is actually the last one of it.
+	 * </p>
+	 */
+	private void setListAsRequired()
+	{
+		String tmp = masterListRear.getData();
+		
+		while(!tmp.equals(masterListRear.getNext().getData()))
+		{
+			masterListRear = masterListRear.getNext();
+		}
 	}
 
 }

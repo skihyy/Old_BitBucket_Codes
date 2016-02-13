@@ -21,7 +21,7 @@ public class Sorter {
 		Node<String> output = rs.sort(sc);
 		
 		// print output
-		System.out.println("\nSorted Result:");
+		System.out.println("Sorted Result:");
 		printCLL(output);
 		
 	}
